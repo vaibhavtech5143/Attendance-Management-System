@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mark Attendance</title>
+</head>
+<body>
+  <h1>Mark Attendance</h1>
+  <form id="attendanceForm">
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required><br><br>
+    
+    <label for="courseId">Course ID:</label>
+    <input type="text" id="courseId" name="courseId" placeholder="Enter Course ID" required><br><br>
+    
+    <label for="studentUids">Student UIDs (comma separated):</label>
+    <input type="text" id="studentUids" name="studentUids" placeholder="Enter Student UIDs" required><br><br>
+    
+    <label for="present">Present:</label>
+    <select id="present" name="present" required>
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select><br><br>
+    
+    <button type="submit">Submit Attendance</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    document.getElementById('attendanceForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const date = document.getElementById('date').value;
+      const courseId = document.getElementById('courseId').value;
+      const studentUids = document.getElementById('studentUids').value.split(',').map(uid => uid.trim());
+      const present = document.getElementById('present').value;
+
+      const formData = {
+        date,
+        courseId,
+        studentUids,
+        present
+      };
+
+      try {
+        const response = await fetch('/mark-attendance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to mark attendance');
+        }
+
+        const responseData = await response.json();
+        document.getElementById('message').innerText = responseData.message;
+        // Optionally clear form inputs or show success message
+      } catch (error) {
+        console.error('Error marking attendance:', error.message);
+        document.getElementById('message').innerText = 'Error marking attendance: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>

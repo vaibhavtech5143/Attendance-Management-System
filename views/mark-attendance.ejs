@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mark Attendance Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0; /* Light gray background */
+      color: #333; /* Dark text color */
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #333; /* Dark text color */
+    }
+
+    form {
+      background-color: #ffffff; /* White background for form */
+      border-radius: 10px;
+      padding: 30px;
+      width: 80%; /* Adjust width as needed */
+      max-width: 600px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin: auto; /* Center align the form */
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555; /* Dark gray label text */
+    }
+
+    input[type="date"],
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc; /* Light gray border */
+      border-radius: 5px;
+      background-color: #f8f8f8; /* Light gray background for inputs */
+      color: #333; /* Dark text color */
+    }
+
+    .student-checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .student-checkboxes div {
+      display: flex;
+      align-items: center;
+    }
+
+    .student-checkboxes input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    button {
+      background-color: #e50914; /* Red button color */
+      color: #ffffff; /* White button text color */
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #ff3e3e; /* Darker red on hover */
+    }
+
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mark Attendance</h1>
+
+  <form id="attendanceForm">
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required>
+    
+    <label for="courseId">Course ID:</label>
+    <input type="text" id="courseId" name="courseId" placeholder="Enter Course ID" required>
+    
+    <label>Select Students:</label><br>
+    <div class="student-checkboxes">
+      <% students.forEach(student => { %>
+        <div>
+          <input type="checkbox" id="<%= student._id %>" name="studentUids" value="<%= student.uid %>">
+          <label for="<%= student._id %>"><%= student.name %> - <%= student.uid %></label>
+        </div>
+      <% }); %>
+    </div>
+    
+    <label for="present">Present:</label>
+    <select id="present" name="present" required>
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select>
+    
+    <button type="button" onclick="submitForm()">Submit Attendance</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    async function submitForm() {
+      const date = document.getElementById('date').value;
+      const courseId = document.getElementById('courseId').value;
+      const studentCheckboxes = document.querySelectorAll('input[name="studentUids"]:checked');
+      const studentUids = Array.from(studentCheckboxes).map(cb => cb.value);
+      const present = document.getElementById('present').value;
+
+      const formData = {
+        date,
+        courseId,
+        studentUids,
+        present
+      };
+
+      try {
+        const response = await fetch('http://localhost:5000/api/mark-attendance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to mark attendance');
+        }
+
+        const responseData = await response.json();
+        document.getElementById('message').innerText = responseData.message;
+        // Optionally clear form inputs or show success message
+      } catch (error) {
+        console.error('Error marking attendance:', error.message);
+        document.getElementById('message').innerText = 'Error marking attendance: ' + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
