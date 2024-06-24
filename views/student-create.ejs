@@ -1,0 +1,123 @@
+<!-- createStudent.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Student</title>
+  <style>
+    /* Minimal styling for the form */
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+    }
+    input[type="text"], select, textarea {
+      width: calc(100% - 20px);
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    input[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      float: right;
+    }
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+    .error-message {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Create Student</h2>
+  <form id="createStudentForm" >
+    <label for="department">Department:</label>
+    <select id="department" name="department" required>
+      <option value="cs&e">CS&E</option>
+      <option value="it">IT</option>
+      <option value="comp,it">Comp/IT</option>
+    </select>
+    <br>
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <br>
+
+    <label for="rollNo">Roll No:</label>
+    <input type="text" id="rollNo" name="rollNo" required>
+    <br>
+
+    <label for="uid">UID:</label>
+    <input type="text" id="uid" name="uid" required>
+    <br>
+
+    <label for="coursesEnrolled">Courses Enrolled (comma-separated):</label>
+    <input type="text" id="coursesEnrolled" name="coursesEnrolled" required>
+    <br>
+
+    <input type="submit" value="Create Student">
+    <span id="formMessage" class="error-message"></span>
+  </form>
+
+  <script>
+    // JavaScript to handle form submission using Fetch API
+    document.getElementById('createStudentForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      // Collect form data
+      const formData = {
+        department: document.getElementById('department').value,
+        name: document.getElementById('name').value,
+        rollNo: document.getElementById('rollNo').value,
+        uid: document.getElementById('uid').value,
+        coursesEnrolled: document.getElementById('coursesEnrolled').value,
+      };
+
+      // Send data using fetch API
+      fetch('http://localhost:5000/api/students', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Handle successful response
+        console.log('Success:', data);
+        document.getElementById('formMessage').textContent = 'Student created successfully';
+        // Optionally, reset the form after successful submission
+        // document.getElementById('createStudentForm').reset();
+      })
+      .catch(error => {
+        // Handle errors
+        console.error('Error:', error);
+        document.getElementById('formMessage').textContent = 'Error creating student: ' + error.message;
+      });
+    });
+  </script>
+</body>
+</html>

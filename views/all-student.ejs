@@ -1,0 +1,68 @@
+<!-- students.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Data</title>
+  <style>
+    /* Styling for the table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #dddddd;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    ul li {
+      list-style: none;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Student Data</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Roll No</th>
+        <th>UID</th>
+        <th>Department</th>
+        <th>Courses Enrolled</th>
+        <th>Attendance</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% students.forEach(student => { %>
+        <tr>
+          <td><%= student.name %></td>
+          <td><%= student.rollNo %></td>
+          <td><%= student.uid %></td>
+          <td><%= student.department %></td>
+          <td><%= student.coursesEnrolled.join(', ') %></td>
+          <td>
+            <ul>
+              <% student.attendance.forEach(att => { %>
+                <li>Date: <%= new Date(att.date).toLocaleDateString() %>, Course ID: <%= att.courseId %>, Present: <%= att.present ? 'Yes' : 'No' %></li>
+              <% }); %>
+            </ul>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</body>
+</html>

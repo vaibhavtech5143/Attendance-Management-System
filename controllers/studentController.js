@@ -5,11 +5,28 @@ const Student = require('../models/student');
 exports.getAllStudents = async (req, res) => {
   try {
     const students = await Student.find();
-    res.status(200).json(students);
+    res.render("all-student.ejs",{students})
+    // console.log((students));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+// Stydent form ssr
+
+exports.createStudentForm = async (req, res) => {
+  try {
+   
+    res.render("student-create.ejs")
+    // console.log((students));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // Create a new student
 exports.createStudent = async (req, res) => {
   const { _id, department, name, rollNo, uid, coursesEnrolled } = req.body;
